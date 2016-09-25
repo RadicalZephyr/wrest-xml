@@ -21,7 +21,12 @@ data they want from the zipper...
 
 ## Usage
 
-FIXME (Yeah, getting there...)
+``` clojure
+[wrest-xml "0.1.0"]
+```
+
+Then check out the [specs](/blob/master/spec/wrest/xml_spec.clj) for
+some example usage.
 
 ## License
 
