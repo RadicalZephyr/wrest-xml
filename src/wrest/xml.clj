@@ -48,16 +48,16 @@
 (defn extract-element
   "Returns an XML Zipper pointing at the element specified.
 
-  This return should not be used directly, but instead should be
-  passed to further extract-* function calls."
+  This value should not be used directly, but instead should be
+  passed to further extract-* calls."
   [el & path]
   (apply xml-zip/xml1-> (xml-zip el) path))
 
 (defn extract-elements
   "Returns an XML Zipper pointing at the elements specified.
 
-  This return should not be used directly, but instead should be
-  passed to further extract-* function calls."
+  This value should not be used directly, but instead should be
+  passed to further extract-* calls."
   [el & path]
   (apply xml-zip/xml-> (xml-zip el) path))
 
