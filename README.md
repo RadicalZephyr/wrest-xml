@@ -28,6 +28,15 @@ data they want from the zipper...
 Then check out the [specs](/spec/wrest/xml_spec.clj) for
 some example usage.
 
+## What Changed/What's Next?
+
+Check out our [changelog](/CHANGELOG.md) for what's coming in the next
+release, and to see what changes each past release introduced.
+
+## Semantic Versioning
+
+We adhere to [Semantic Versioning v2.0.0](http://semver.org/).
+
 ## License
 
 Copyright © 2016 Geoff Shannon
