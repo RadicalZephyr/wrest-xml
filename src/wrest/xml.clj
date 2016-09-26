@@ -24,8 +24,19 @@
 (defn- extract-body [zip-fn el-sym path-transform]
   `(apply ~zip-fn (xml-zip ~el-sym) ~path-transform))
 
+(defn- derive-fnames [fnames]
+  (if (and (vector? fnames)
+           (= 2 (count fnames)))
+    fnames
+    (let [fname fnames]
+      [fnames (-> fnames (str "-from-many") symbol)])))
+
 (defmacro defextract
-  "This macro will define a pair of named functions, `name' and `name-from-many'.
+  "This macro will define a pair of named functions as wrappers on xml-> and xml1->.
+
+  By default `<name>' and `<name>-from-many', but if a vector of two
+  symbols is passed as the first argument, then those symbols will be
+  used.
 
   These functions correspond to using the xml1-> and xml-> functions
   respectively. The arg-vec parameter is used as the argument vector
@@ -37,8 +48,8 @@
   functions."
   ([fname arg-vec path-transform]
    `(defextract ~fname "" ~arg-vec ~path-transform))
-  ([fname docstring arg-vec path-transform]
-   (let [many-fn-name (-> fname (str "-from-many") symbol)
+  ([fnames docstring arg-vec path-transform]
+   (let [[fname many-fn-name] (derive-fnames fnames)
          xml-el-sym   (first arg-vec)]
      `(do
         (defn ~fname ~docstring ~arg-vec
@@ -57,21 +68,12 @@
         attr-name (last path)]
     (concat path-to [(xml-zip/attr attr-name)])))
 
-(defn extract-element
+(defextract [extract-element extract-elements]
   "Returns an XML Zipper pointing at the element specified.
 
   This value should not be used directly, but instead should be
   passed to further extract-* calls."
-  [el & path]
-  (apply xml-zip/xml1-> (xml-zip el) path))
-
-(defn extract-elements
-  "Returns an XML Zipper pointing at the elements specified.
-
-  This value should not be used directly, but instead should be
-  passed to further extract-* calls."
-  [el & path]
-  (apply xml-zip/xml-> (xml-zip el) path))
+  [el & path] path)
 
 (defn extract-text-from-children [el & path]
   (let [element (apply extract-element el path)]
