@@ -1,4 +1,4 @@
-(defproject wrest-xml "0.1.0"
+(defproject wrest-xml "0.1.1-SNAPSHOT"
   :description "Get just exactly the data you need from those pesky XML documents."
   :url "https://github.com/RadicalZephyr/wrest-xml"
   :scm {:name "git"
