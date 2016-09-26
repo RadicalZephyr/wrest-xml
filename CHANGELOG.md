@@ -8,6 +8,9 @@ We adhere to [Semantic Versioning v2.0.0](http://semver.org/).
 ## [Unreleased]
 ### Changed
 
+### Added
+- Alias for `clojure.data.xml/parse-str`
+
 ## 0.1.0 - 2016-08-22
 ### Added
 - Initial implementation

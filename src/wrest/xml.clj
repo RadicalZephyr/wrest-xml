@@ -4,9 +4,9 @@
             [clojure.zip :as zip]
             [clojure.data.xml :as xml]
             [clojure.data.zip :as data-zip]
-            [clojure.string :as string]
             [clojure.data.zip.xml :as xml-zip]))
 
+(def parse-str xml/parse-str)
 
 (def attr= xml-zip/attr=)
 
@@ -60,15 +60,6 @@
   passed to further extract-* calls."
   [el & path]
   (apply xml-zip/xml-> (xml-zip el) path))
-
-(defn- escape-invalid-characters [ostensibly-correct-xml]
-  (string/replace (string/replace ostensibly-correct-xml
-                  #"&(?!(?:amp|quot|apos|lt|gt);)" "&amp;")
-                  #"<phone:re:1>" ""))
-
-(defn- parse-str [xml-str]
-  (let [format-xml (escape-invalid-characters xml-str)]
-    (xml/parse-str format-xml)))
 
 (defn extract-text-from-children [el & path]
   (let [element (apply extract-element el path)]

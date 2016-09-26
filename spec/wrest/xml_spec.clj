@@ -44,12 +44,6 @@
        </Child>
     </MultiTopLevel>"))
 
-(def escape-characters-xml
-  (sut/parse-str
-   "<TopLevel2><phone:re:1>
-    James & Lily Potter
-    </TopLevel2>"))
-
 (describe "extract-text"
   (it "gets one text element"
     (should= "1"
@@ -105,14 +99,4 @@
                     children))
       (should= [["Bar" "Baz"] ["Zip" "Zop"]]
                (map #(sut/extract-text-from-many % :GrandChild)
-                    children))))
-
-  (it "escapes & characters when parsing XML"
-    (let [result (sut/extract-elements escape-characters-xml)]
-      (should== [" James & Lily Potter "]
-                (mapcat #(sut/extract-text-from-many %) result))))
-
-  (it "escapes <phone:re:1> when parsing XML"
-    (let [result (sut/extract-elements escape-characters-xml)]
-      (should== [" James & Lily Potter "]
-                (mapcat #(sut/extract-text-from-many %) result)))))
+                    children)))))
