@@ -12,38 +12,48 @@
 
 (def children data-zip/children)
 
+(defn when [& predicate-path]
+  (vec predicate-path))
+
 (defn- xml-zip [el]
   (if (= (class el)
          clojure.data.xml.Element)
     (zip/xml-zip el)
     el))
 
-(defn- extract-text-with [xml-fn el & path]
-  (c/when (seq el)
-    (let [xml-path (concat path [xml-zip/text])]
-      (apply xml-fn (xml-zip el) xml-path))))
+(defn- extract-body [zip-fn el-sym path-transform]
+  `(apply ~zip-fn (xml-zip ~el-sym) ~path-transform))
 
-(def extract-text
-  (partial extract-text-with xml-zip/xml1->))
+(defmacro defextract
+  "This macro will define a pair of named functions, `name' and `name-from-many'.
 
-(def extract-text-from-many
-  (partial extract-text-with xml-zip/xml->))
+  These functions correspond to using the xml1-> and xml-> functions
+  respectively. The arg-vec parameter is used as the argument vector
+  for both functions, and the first element is assumed to be the xml
+  element that is being operated on. The body of the `defextract'
+  should contain one expression that returns a sequence that
+  represents the desired path through the xml document. This sequence
+  will be applied as the final arguments to one of the xml*->
+  functions."
+  [name arg-vec path-transform]
+  (let [many-fn-name (-> name (str "-from-many") symbol)
+        xml-el-sym   (first arg-vec)]
+    `(do
+       (defn ~name ~arg-vec
+         (c/when (seq ~xml-el-sym)
+           ~(extract-body xml-zip/xml1-> xml-el-sym path-transform)))
 
-(defn- extract-attribute-with [xml-fn el & path]
-  (c/when (seq el)
-    (let [path-to (butlast path)
-          attr-name (last path)
-          xml-path (concat path-to [(xml-zip/attr attr-name)])]
-      (apply xml-fn (xml-zip el) xml-path))))
+       (defn ~many-fn-name ~arg-vec
+         (c/when (seq ~xml-el-sym)
+          ~(extract-body xml-zip/xml->   xml-el-sym path-transform))))))
 
-(def extract-attribute
-  (partial extract-attribute-with xml-zip/xml1->))
+(defextract extract-text [el & path]
+  (concat path [xml-zip/text]))
 
-(def extract-attribute-from-many
-  (partial extract-attribute-with xml-zip/xml->))
-
-(defn when [& predicate-path]
-  (vec predicate-path))
+(defextract extract-attribute [el & path]
+  (let [path-to (butlast path)
+        attr-name (last path)]
+    (concat path-to [(xml-zip/attr attr-name)])))
 
 (defn extract-element
   "Returns an XML Zipper pointing at the element specified.
