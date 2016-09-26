@@ -35,17 +35,19 @@
   represents the desired path through the xml document. This sequence
   will be applied as the final arguments to one of the xml*->
   functions."
-  [name arg-vec path-transform]
-  (let [many-fn-name (-> name (str "-from-many") symbol)
-        xml-el-sym   (first arg-vec)]
-    `(do
-       (defn ~name ~arg-vec
-         (c/when (seq ~xml-el-sym)
-           ~(extract-body xml-zip/xml1-> xml-el-sym path-transform)))
+  ([fname arg-vec path-transform]
+   `(defextract ~fname "" ~arg-vec ~path-transform))
+  ([fname docstring arg-vec path-transform]
+   (let [many-fn-name (-> fname (str "-from-many") symbol)
+         xml-el-sym   (first arg-vec)]
+     `(do
+        (defn ~fname ~docstring ~arg-vec
+          (c/when (seq ~xml-el-sym)
+            ~(extract-body xml-zip/xml1-> xml-el-sym path-transform)))
 
-       (defn ~many-fn-name ~arg-vec
-         (c/when (seq ~xml-el-sym)
-          ~(extract-body xml-zip/xml->   xml-el-sym path-transform))))))
+        (defn ~many-fn-name ~docstring ~arg-vec
+          (c/when (seq ~xml-el-sym)
+            ~(extract-body xml-zip/xml->   xml-el-sym path-transform)))))))
 
 (defextract extract-text [el & path]
   (concat path [xml-zip/text]))
